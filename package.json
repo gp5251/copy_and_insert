@@ -2,7 +2,7 @@
   "name": "copy-and-insert",
   "displayName": "copyAndInsert",
   "publisher": "paulgui",
-  "description": "copy a file to the target directory you specified and insert the path to the file you're editting",
+  "description": "copy a file to the target directory you specified and insert the path to the file you're editting.方便在项目中拷贝文件，并插入文件路径到当前文档。",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.30.0"
@@ -14,6 +14,10 @@
     "onCommand:copy-and-insert.func"
   ],
   "main": "./extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gp5251/copy_and_insert"
+  },
   "contributes": {
     "commands": [
       {
