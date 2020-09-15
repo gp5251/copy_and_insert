@@ -61,6 +61,7 @@ function activate(context) {
 		// The code you place here will be executed every time your command is executed
 		const editor = vscode.window.activeTextEditor
 		const tPath = vscode.workspace.getConfiguration().get('copyAndInsert.path');
+		const alias = vscode.workspace.getConfiguration().get('copyAndInsert.alias');
 		const rootPath = vscode.workspace.rootPath;
 		const targetPath = path.join(rootPath, tPath);
 		let scriptPath = path.join(__dirname, './res/apple.applescript');
@@ -94,7 +95,11 @@ function activate(context) {
 
 								editor.edit(edit => {
 									let current = editor.selection;
-									edit.insert(current.start, targetFilePath.replace(rootPath, '@'));
+									if (alias) {
+										edit.insert(current.start, targetFilePath.replace(path.join(rootPath, alias), '@'));
+									} else {
+										edit.insert(current.start, targetFilePath.replace(rootPath, ''));
+									}
 								});
 
 							} else console.error(err);

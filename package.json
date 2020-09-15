@@ -1,9 +1,9 @@
 {
   "name": "copy-and-insert",
-  "displayName": "copyAndInsert",
+  "displayName": "copy & Insert",
   "publisher": "paulgui",
-  "description": "copy a file to the target directory you specified and insert the path to the file you're editting.方便在项目中拷贝文件，并插入文件路径到当前文档。",
-  "version": "0.0.1",
+  "description": "copy a file to the target directory and insert the path to the file you're editting.将选中到文件拷贝到目标目录，并将文件路径插入到当前文档。",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.30.0"
   },
@@ -27,12 +27,17 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "copy-and-insert",
+      "title": "copyAndInsert",
       "properties": {
         "copyAndInsert.path": {
           "type": "string",
           "default": "./src/assets",
           "description": "复制到文件夹"
+        },
+        "copyAndInsert.alias": {
+          "type": "string",
+          "default": "./src",
+          "description": "@映射,如果不需要请留空"
         }
       },
       "keybindings": [
