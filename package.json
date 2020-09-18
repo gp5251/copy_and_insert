@@ -4,9 +4,15 @@
   "publisher": "paulgui",
   "description": "copy a file to the target directory and insert the path to the file you're editting.将选中到文件拷贝到目标目录，并将文件路径插入到当前文档。",
   "version": "0.0.3",
+  "keywords": [
+    "copy",
+    "insert",
+    "paste"
+  ],
   "engines": {
     "vscode": "^1.30.0"
   },
+  "icon": "res/logo.png",
   "categories": [
     "Other"
   ],
