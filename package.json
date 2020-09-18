@@ -3,7 +3,7 @@
   "displayName": "copy & Insert",
   "publisher": "paulgui",
   "description": "copy a file to the target directory and insert the path to the file you're editting.将选中到文件拷贝到目标目录，并将文件路径插入到当前文档。",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.30.0"
   },
@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:copy-and-insert.func"
+    "onCommand:copyAndInsert.func"
   ],
   "main": "./extension.js",
   "repository": {
@@ -21,7 +21,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "copy-and-insert.func",
+        "command": "copyAndInsert.func",
         "title": "copy & insert"
       }
     ],
@@ -34,15 +34,20 @@
           "default": "./src/assets",
           "description": "复制到文件夹"
         },
+        "copyAndInsert.aliasKey": {
+          "type": "string",
+          "default": "@",
+          "description": "alias映射名"
+        },
         "copyAndInsert.alias": {
           "type": "string",
           "default": "./src",
-          "description": "@映射,如果不需要请留空"
+          "description": "alias映射路径,如果不需要请留空"
         }
       },
       "keybindings": [
         {
-          "command": "copy-and-insert.func",
+          "command": "copyAndInsert.func",
           "key": "ctrl+f10",
           "mac": "ctrl+cmd+p",
           "when": "editorTextFocus"

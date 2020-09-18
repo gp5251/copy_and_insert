@@ -52,16 +52,17 @@ function activate(context) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "copy-and-insert" is now active!');
+	console.log('Congratulations, your extension "Copy & Insert" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('copy-and-insert.func', function () {
+	let disposable = vscode.commands.registerCommand('copyAndInsert.func', function () {
 		// The code you place here will be executed every time your command is executed
 		const editor = vscode.window.activeTextEditor
 		const tPath = vscode.workspace.getConfiguration().get('copyAndInsert.path');
 		const alias = vscode.workspace.getConfiguration().get('copyAndInsert.alias');
+		const aliasKey = vscode.workspace.getConfiguration().get('copyAndInsert.aliasKey');
 		const rootPath = vscode.workspace.rootPath;
 		const targetPath = path.join(rootPath, tPath);
 		let scriptPath = path.join(__dirname, './res/apple.applescript');
@@ -79,9 +80,9 @@ function activate(context) {
 		ascript.stdout.on('end', async function () {
 			let fname = path.basename(url)
 			let targetFilePath = path.join(targetPath, fname)
-			
+
 			if (fs.existsSync(targetFilePath)) {
-				cosnt select = await vscode.window.showInformationMessage("目标文件已经存在，如何处理？",'取消','覆盖','重命名')
+				const select = await vscode.window.showInformationMessage("目标文件已经存在，如何处理？", '取消', '覆盖', '重命名')
 				if (select == '取消') return;
 				if (select == '重命名') {
 					do {
@@ -101,8 +102,8 @@ function activate(context) {
 
 								editor.edit(edit => {
 									let current = editor.selection;
-									if (alias) {
-										edit.insert(current.start, targetFilePath.replace(path.join(rootPath, alias), '@'));
+									if (alias && aliasKey) {
+										edit.insert(current.start, targetFilePath.replace(path.join(rootPath, alias), aliasKey));
 									} else {
 										edit.insert(current.start, targetFilePath.replace(rootPath, ''));
 									}
