@@ -8,7 +8,7 @@
 
 - **copyAndInsert.path** 复制到目标文件夹, 默认为当前项目下 **./src/assets**
 - **copyAndInsert.aliasKey** 映射名, 默认为 **@**
-- **copyAndInsert.alias** @映射目录, 默认为当前项目下 **./src**
+- **copyAndInsert.alias** 映射目录, 默认为当前项目下 **./src**
 
 ## 使用方式
 
