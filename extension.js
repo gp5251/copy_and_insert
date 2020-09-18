@@ -76,14 +76,20 @@ function activate(context) {
 			url += data.toString().trim();
 		});
 
-		ascript.stdout.on('end', function () {
+		ascript.stdout.on('end', async function () {
 			let fname = path.basename(url)
 			let targetFilePath = path.join(targetPath, fname)
-
-			while (fs.existsSync(targetFilePath)) {
-				const [newFname, type] = fname.split('.');
-				fname = [newFname + '_new', type].join('.')
-				targetFilePath = path.join(targetPath, fname);
+			
+			if (fs.existsSync(targetFilePath)) {
+				cosnt select = await vscode.window.showInformationMessage("目标文件已经存在，如何处理？",'取消','覆盖','重命名')
+				if (select == '取消') return;
+				if (select == '重命名') {
+					do {
+						const [newFname, type] = fname.split('.');
+						fname = [newFname + '_new', type].join('.')
+						targetFilePath = path.join(targetPath, fname);
+					} while (fs.existsSync(targetFilePath))
+				}
 			}
 
 			if (fs.existsSync(url)) {
@@ -91,7 +97,7 @@ function activate(context) {
 					.then(() => {
 						fs.copyFile(url, targetFilePath, (err) => {
 							if (!err) {
-								vscode.window.showInformationMessage('CopyAndPaste done');
+								vscode.window.showInformationMessage('Copy & Paste, done');
 
 								editor.edit(edit => {
 									let current = editor.selection;
