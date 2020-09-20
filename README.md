@@ -2,7 +2,9 @@
 
 - 将选中到文件拷贝到目标目录，并将文件路径插入到当前文档。
 - 默认插入到 ./src/assects
-- 默认使用 @ => ./src 的文件映射
+- 默认使用 @ => ./src 的文件映射，如果是在css里使用图片，可能需要改为~@
+
+![demo](https://github.com/gp5251/copy_and_insert/blob/master/res/demo.gif)
 
 ## 配置
 
