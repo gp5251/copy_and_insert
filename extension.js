@@ -57,13 +57,27 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('copyAndInsert.func', function () {
+	let disposable = vscode.commands.registerCommand('copyAndInsert.func', async function () {
 		// The code you place here will be executed every time your command is executed
 		const editor = vscode.window.activeTextEditor
-		const tPath = vscode.workspace.getConfiguration().get('copyAndInsert.path');
+		const tPaths = vscode.workspace.getConfiguration().get('copyAndInsert.paths');
 		const alias = vscode.workspace.getConfiguration().get('copyAndInsert.alias');
 		const aliasKey = vscode.workspace.getConfiguration().get('copyAndInsert.aliasKey');
 		const rootPath = vscode.workspace.rootPath;
+
+		let tPath
+		if (tPaths.length > 1) {
+			tPath = await vscode.window.showQuickPick(tPaths, {
+				machOnDescription: true,
+				machOnDetail: true,
+				canPickMany: false,
+				placeHolder: "复制到哪个文件夹:",
+				// onDidSelectItem: (item) => console.log(`Item ${item} is selected`)
+			})
+		} else {
+			tPath = tPaths[0]
+		}
+
 		const targetPath = path.join(rootPath, tPath);
 		let scriptPath = path.join(__dirname, './res/apple.applescript');
 		let url = '';
@@ -82,7 +96,12 @@ function activate(context) {
 			let targetFilePath = path.join(targetPath, fname)
 
 			if (fs.existsSync(targetFilePath)) {
-				const select = await vscode.window.showInformationMessage("目标文件已经存在，如何处理？", '取消', '覆盖', '重命名')
+				const select = await vscode.window.showQuickPick(['取消', '覆盖', '重命名'], {
+					machOnDescription: true,
+					machOnDetail: true,
+					canPickMany: false,
+					placeHolder: "目标文件已经存在，如何处理？",
+				})
 				if (select == '取消') return;
 				if (select == '重命名') {
 					do {

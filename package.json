@@ -3,7 +3,7 @@
   "displayName": "Copy & Insert",
   "publisher": "paulgui",
   "description": "copy a file to the target directory and insert the path to the file you're editting.将选中到文件拷贝到目标目录，并将文件路径插入到当前文档。",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "keywords": [
     "copy",
     "insert",
@@ -35,15 +35,15 @@
       "type": "object",
       "title": "copyAndInsert",
       "properties": {
-        "copyAndInsert.path": {
-          "type": "string",
-          "default": "./src/assets",
-          "description": "复制到文件夹"
+        "copyAndInsert.paths": {
+          "type": "array",
+          "default": ["./src/assets"],
+          "description": "复制到目标文件夹,存在多个文件夹时会以选项形式供用户选择"
         },
         "copyAndInsert.aliasKey": {
           "type": "string",
           "default": "@",
-          "description": "alias映射名"
+          "description": "alias映射名,如果不需要请留空"
         },
         "copyAndInsert.alias": {
           "type": "string",
