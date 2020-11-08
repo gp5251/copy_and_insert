@@ -45,53 +45,74 @@ function createImageDirWithImagePath(imagePath) {
 	});
 }
 
+function getFiles() {
+	let scriptPath = path.join(__dirname, './res/apple.applescript');
+	let url = '';
+
+	let ascript = spawn('osascript', [scriptPath]);
+	ascript.on('error', function (e) {
+		Logger.showErrorMessage(e);
+	});
+
+	ascript.stdout.on('data', function (data) {
+		url += data.toString().trim();
+	});
+
+	return new Promise(resolve => {
+		ascript.stdout.on('end', async function () {
+			resolve(url)
+		})
+	})
+}
+
+async function getTargetPath() {
+	const tPaths = vscode.workspace.getConfiguration().get('copyAndInsert.paths');
+
+	let tPath
+	if (tPaths.length > 1) {
+		tPath = await vscode.window.showQuickPick(tPaths, {
+			machOnDescription: true,
+			machOnDetail: true,
+			canPickMany: false,
+			placeHolder: "复制到哪个文件夹:",
+			// onDidSelectItem: (item) => console.log(`Item ${item} is selected`)
+		})
+	} else {
+		tPath = tPaths[0]
+	}
+
+	return tPath
+}
+
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "Copy & Insert" is now active!');
-
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('copyAndInsert.func', async function () {
 		// The code you place here will be executed every time your command is executed
 		const editor = vscode.window.activeTextEditor
-		const tPaths = vscode.workspace.getConfiguration().get('copyAndInsert.paths');
 		const alias = vscode.workspace.getConfiguration().get('copyAndInsert.alias');
 		const aliasKey = vscode.workspace.getConfiguration().get('copyAndInsert.aliasKey');
 		const rootPath = vscode.workspace.rootPath;
+		const tPath = await getTargetPath()
+		const targetPath = path.join(rootPath, tPath);
+		const urlsStr = await getFiles()
+		const urls = urlsStr.split('Macintosh HD')
 
-		let tPath
-		if (tPaths.length > 1) {
-			tPath = await vscode.window.showQuickPick(tPaths, {
-				machOnDescription: true,
-				machOnDetail: true,
-				canPickMany: false,
-				placeHolder: "复制到哪个文件夹:",
-				// onDidSelectItem: (item) => console.log(`Item ${item} is selected`)
-			})
-		} else {
-			tPath = tPaths[0]
+		if (!urlsStr.length || !urls.length) {
+			vscode.window.showWarningMessage('copy&insert: 没有选择文件');
+			return;
 		}
 
-		const targetPath = path.join(rootPath, tPath);
-		let scriptPath = path.join(__dirname, './res/apple.applescript');
-		let url = '';
-
-		let ascript = spawn('osascript', [scriptPath]);
-		ascript.on('error', function (e) {
-			Logger.showErrorMessage(e);
-		});
-
-		ascript.stdout.on('data', function (data) {
-			url += data.toString().trim();
-		});
-
-		ascript.stdout.on('end', async function () {
+		let i = 0
+		for (let url of urls) {
+		// urls.forEach(async url => {
 			let fname = path.basename(url)
 			let targetFilePath = path.join(targetPath, fname)
 
@@ -116,19 +137,20 @@ function activate(context) {
 				createImageDirWithImagePath(targetFilePath)
 					.then(() => {
 						fs.copyFile(url, targetFilePath, (err) => {
-							if (!err) {
-								vscode.window.showInformationMessage('Copy & Paste, done');
-
-								editor.edit(edit => {
-									let current = editor.selection;
-									if (alias && aliasKey) {
-										edit.insert(current.start, targetFilePath.replace(path.join(rootPath, alias), aliasKey));
-									} else {
-										edit.insert(current.start, targetFilePath.replace(rootPath, ''));
-									}
-								});
-
-							} else console.error(err);
+							if (err) {
+								console.error(err);
+							} else {
+								setTimeout(() => {
+									editor.edit(edit => {
+										let current = editor.selection;
+										if (alias && aliasKey) {
+											edit.insert(current.start, targetFilePath.replace(path.join(rootPath, alias), aliasKey));
+										} else {
+											edit.insert(current.start, targetFilePath.replace(rootPath, ''));
+										}
+									});
+								}, 100 * (i++))
+							}
 						})
 					})
 					.catch(e => {
@@ -137,7 +159,7 @@ function activate(context) {
 			} else {
 				console.error(url, 'not exist');
 			}
-		});
+		};
 	});
 
 	context.subscriptions.push(disposable);
